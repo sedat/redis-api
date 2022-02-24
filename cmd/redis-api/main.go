@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/sedat/redis-api/internal/item"
@@ -38,9 +37,6 @@ func main() {
 	err = http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), logRequest(http.DefaultServeMux))
 	if err != nil {
 		log.Fatal(err)
-	}
-	for range time.Tick(time.Minute * 1) {
-
 	}
 }
 
