@@ -1,0 +1,30 @@
+version: '3'
+
+# Define services
+services:
+
+  # App Service
+  app:
+    # Configuration for building the docker image for the service
+    build:
+      context: . # Use an image built from the specified dockerfile in the current directory.
+      dockerfile: cmd/redis-api/Dockerfile
+    ports:
+      - 9000:9000 
+    environment:
+      - REDIS_URL=redis
+      - PORT=9000
+    depends_on: 
+      - redis # This service depends on redis. Start that first.
+
+  # Redis Service   
+  redis:
+    image: redis # Use a public Redis image to build the redis service 
+    container_name: redis
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+
+volumes:
+  redis-data:
