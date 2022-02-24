@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -14,12 +15,18 @@ func Error(w http.ResponseWriter, error Response, code int) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
 	error.Status = "ERR"
-	json.NewEncoder(w).Encode(error)
+	err := json.NewEncoder(w).Encode(error)
+	if err != nil {
+		log.Printf("Error encoding json %s", err)
+	}
 }
 
 func Success(w http.ResponseWriter, success Response, code int) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
 	success.Status = "OK"
-	json.NewEncoder(w).Encode(success)
+	err := json.NewEncoder(w).Encode(success)
+	if err != nil {
+		log.Printf("Error encoding json %s", err)
+	}
 }
