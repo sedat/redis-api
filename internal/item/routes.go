@@ -10,6 +10,18 @@ import (
 	"github.com/sedat/redis-api/internal/utils"
 )
 
+func GetRouter(ctx context.Context, redisRepository repository.Repository) *http.ServeMux {
+    router := http.NewServeMux()
+
+	router.HandleFunc("/get", GetItemHandler(ctx, redisRepository))
+	router.HandleFunc("/get-keys", GetAllKeysHandler(ctx, redisRepository))
+	router.HandleFunc("/get-items", GetAllItemsHandler(ctx, redisRepository))
+	router.HandleFunc("/set", SetItemHandler(ctx, redisRepository))
+	router.HandleFunc("/flush", FlushDBHandler(ctx, redisRepository))
+
+    return router
+}
+
 func GetItemHandler(ctx context.Context, redisRepository repository.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		key := req.URL.Query().Get("key")
@@ -19,7 +31,7 @@ func GetItemHandler(ctx context.Context, redisRepository repository.Repository) 
 			return
 		}
 		item := model.Item{Key: key, Value: value}
-		utils.Success(w, utils.Response{Message: item}, http.StatusAccepted)
+		utils.Success(w, utils.Response{Message: item}, http.StatusOK)
 	}
 }
 
@@ -30,7 +42,7 @@ func GetAllKeysHandler(ctx context.Context, redisRepository repository.Repositor
 			utils.Error(w, utils.Response{Message: err}, http.StatusBadGateway)
 			return
 		}
-		utils.Success(w, utils.Response{Message: value}, http.StatusAccepted)
+		utils.Success(w, utils.Response{Message: value}, http.StatusOK)
 	}
 }
 
@@ -41,7 +53,7 @@ func GetAllItemsHandler(ctx context.Context, redisRepository repository.Reposito
 			utils.Error(w, utils.Response{Message: err}, http.StatusBadGateway)
 			return
 		}
-		utils.Success(w, utils.Response{Message: value}, http.StatusAccepted)
+		utils.Success(w, utils.Response{Message: value}, http.StatusOK)
 	}
 }
 

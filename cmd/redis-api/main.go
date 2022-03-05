@@ -28,19 +28,16 @@ func main() {
 
 	redisRepository := repository.NewRepository(client)
 
-	http.HandleFunc("/get", item.GetItemHandler(ctx, redisRepository))
-	http.HandleFunc("/get-keys", item.GetAllKeysHandler(ctx, redisRepository))
-	http.HandleFunc("/get-items", item.GetAllItemsHandler(ctx, redisRepository))
-	http.HandleFunc("/set", item.SetItemHandler(ctx, redisRepository))
-	http.HandleFunc("/flush", item.FlushDBHandler(ctx, redisRepository))
+    router := item.GetRouter(ctx, redisRepository)
+
 	log.Println("Listing for requests at http://localhost:9000/")
-	err = http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), logRequest(http.DefaultServeMux))
+	err = http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), logRequest(router))
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func logRequest(handler http.Handler) http.Handler {
+func logRequest(handler *http.ServeMux) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 		handler.ServeHTTP(w, r)
